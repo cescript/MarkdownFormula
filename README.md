@@ -27,10 +27,10 @@ In this example, we will use the cells of the previous table in our current tabl
 <!-- table2-->
 | name                  | formula                                   | values1                     | values2                     |
 | --------------------- | ----------------------------------------- | --------------------------- | --------------------------- |
-| thress and one        | -                                         | 3                           | 1                           |
-| summation from table1 | =table1!C1                                | 4                           | [3]({=table1!C1})           |
-| summation and average | =SUM(C1:D2),=AVERAGE(C1:D2)               | [11]({=SUM(C1:D2)})         | [2.75]({=AVERAGE(C1:D2)})   |
-| count larger than 3   | =COUNTIF(C1:C3,">3"),=COUNTIF(D1:D3,">3") | [2]({=COUNTIF(C1:C3,">3")}) | [0]({=COUNTIF(D1:D3,">3")}) |
+| six and one           | -                                         | 6                           | 1                           |
+| summation from table1 | =table1!C3                                | 4                           | [11]({=table1!C3})          |
+| summation and average | =SUM(C1:D2),=AVERAGE(C1:D2)               | [22]({=SUM(C1:D2)})         | [5.5]({=AVERAGE(C1:D2)})    |
+| count larger than 3   | =COUNTIF(C1:C3,">3"),=COUNTIF(D1:D3,">3") | [3]({=COUNTIF(C1:C3,">3")}) | [2]({=COUNTIF(D1:D3,">3")}) |
 
 ## How to Use
 Extension is not published in [VS Code Extension Marketplace](https://marketplace.visualstudio.com/vscode) yet. To use it you can use the prebuilt version under the release or build it from the source code.
