@@ -33,8 +33,14 @@ In this example, we will use the cells of the previous table in our current tabl
 | count larger than 3   | =COUNTIF(C1:C3,">3"),=COUNTIF(D1:D3,">3") | [3]({=COUNTIF(C1:C3,">3")}) | [2]({=COUNTIF(D1:D3,">3")}) |
 
 ## How to Use
-Extension is not published in [VS Code Extension Marketplace](https://marketplace.visualstudio.com/vscode) yet. To use it you can use the prebuilt version under the release or build it from the source code.
+You have three alternatives to install this extension.
 
-1. Clone this repository.
-2. Install "npm" and run "npm install -g vsce"
-3. Change directory to MarkdownFormula and run "vsce package"
+1. Download it from [VS Code Extension Marketplace](https://marketplace.visualstudio.com/vscode).
+2. Download the prebuilt version under the [releases](https://github.com/cescript/MarkdownFormula/releases) tab
+3. Build it from the source
+
+After installing the extension;
+1. Open a document which contains markdown tables and formulas
+2. Press Ctrl+Shift+P to run a command
+3. Write "Calculate all formulas" and press Enter
+4. All the formula cells in your document should be updated with the calculated values
