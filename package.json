@@ -13,6 +13,7 @@
         "formula",
         "excel"
     ],
+    "icon": "logo/logo.png",
     "engines": {
         "vscode": "^1.60.0"
     },
