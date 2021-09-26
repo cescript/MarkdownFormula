@@ -13,8 +13,9 @@ type TableContent = {
 };
 
 type FormulaReturn = {
-    indices: number[][];
+    address: SimpleCellAddress[];
     locations: number[][];
+    formulas: string[];
     data: string [][];
 }
 
@@ -29,8 +30,11 @@ export type MarkdownReturn = {
 // given the document, parse valid tables
 export function MarkdownFormula(document:string):MarkdownReturn[] {
 
+    // split document into lines
+    let allLines: string[] = document.split(/\r?\n/gm)
+
     // find the tables
-    let tableCanditates = SplitValidMarkdownTables(document);
+    let tableCanditates = SplitValidMarkdownTables(allLines);
 
     // print the tables
     console.log("markdown-formula detected %d valid tables!", tableCanditates.length);
@@ -48,13 +52,11 @@ export function MarkdownFormula(document:string):MarkdownReturn[] {
     let output:MarkdownReturn[] = [];
 
     // formulas in table
-    let formulas: SimpleCellAddress[] = [];
+    let allFormulaData: FormulaReturn[] = [];
 
     // create data pointer for table content
     for(let i = 0; i < tableCanditates.length; i++)
     {
-        let formulaData = GetFormulaData(tableCanditates[i]);
-
         // add the current table to hfInstance
         const sheetNameI = hfInstance.addSheet(tableCanditates[i].sheet);
         const sheetIdI = hfInstance.getSheetId(sheetNameI);
@@ -62,26 +64,23 @@ export function MarkdownFormula(document:string):MarkdownReturn[] {
         // not possible but ts forces this check
         if(typeof sheetIdI !== "undefined")
         {
+            let formulaData = GetFormulaData(tableCanditates[i], sheetIdI);
             hfInstance.setSheetContent(sheetIdI, formulaData.data);
-
-            // we found a table that contains formula
-            if(formulaData.indices.length > 0)
-            {
-                // add the cell address to list
-                for(let k = 0; k < formulaData.indices.length; k++)
-                {
-                    formulas.push({ col: formulaData.indices[k][1], row: formulaData.indices[k][0], sheet: sheetIdI });
-                    output.push({data:formulaData.data[formulaData.indices[k][0]][formulaData.indices[k][1]], locations: formulaData.locations[k]});
-                }
-            }
+            allFormulaData.push(formulaData);
         }
     }
 
     // go over all formulas and get the results
-    for(let k = 0; k < formulas.length; k++)
+    for(let k = 0; k < allFormulaData.length; k++)
     {
-        const val = hfInstance.getCellValue(formulas[k]);
-        output[k].data = ' [' + val + ']' + '({' + output[k].data + '}) ';
+        // add the cell address to list
+        for(let i = 0; i < allFormulaData[k].address.length; i++)
+        {
+            const val = hfInstance.getCellValue(allFormulaData[k].address[i]);
+            let result = '[' + val + ']' + '({' + allFormulaData[k].formulas[i] + '})';
+            // push the result into output vector
+            output.push({data:result, locations: allFormulaData[k].locations[i]});
+        }
     }
 
     // return the result
@@ -89,42 +88,41 @@ export function MarkdownFormula(document:string):MarkdownReturn[] {
 }
 
 // split the table into columns
-function GetFormulaData(table:TableContent):FormulaReturn {
+function GetFormulaData(table:TableContent, sheetID:number):FormulaReturn {
 
+    // get the cells of the table
     let tableData = table.data;
-
-    // create data array
-    let allData: string[][] = [];
-    let formulaIndices: number[][] = [];
-    let formulaLocations: number[][] = [];
+    let output:FormulaReturn = {address:[], locations:[], formulas:[], data:[]};
 
     for(let r = 0; r < tableData.length; r++)
     {
-        let columnData: string[] = [];
+        let rowRdata: string[] = [];
 
         // loop on the columns
         for(let c = 0; c < tableData[r].length; c++)
         {
             // get the content
-            let content = tableData[r][c].content.trim();
+            let content = tableData[r][c].content;
 
             // is formula?
             let formulaPattern = /\[.*?\]\(\{(\=.*?)\}\)/
-            if(content.match(formulaPattern))
+            let match = content.match(formulaPattern);
+            if(match != null && match.index)
             {
-                formulaIndices.push([r,c]);
-                formulaLocations.push([tableData[r][c].line, tableData[r][c].column, tableData[r][c].content.length]);
-                content = content.replace(formulaPattern, '$1');
+                output.address.push({ col: c, row: r, sheet: sheetID });
+                output.locations.push([tableData[r][c].line, tableData[r][c].column + match.index, match[0].length]);
+                output.formulas.push(match[1]);
+                content = match[1];
             }
 
             // set the content
-            columnData.push(content);
+            rowRdata.push(content.trim());
         }
-        allData.push(columnData);
+        output.data.push(rowRdata);
     }
 
     // split the content into columns
-    return {indices:formulaIndices, locations:formulaLocations, data:allData};
+    return output;
 }
 
 // returns all consecutive blocks in given array
@@ -205,9 +203,8 @@ function GetTableContent(allLines:string[], dataLines:number[], sheetID:number)
 
 // splits the given document into smaller text groups that can be markdown tables
 // returns an array of candidate table content and line numbers
-function SplitValidMarkdownTables(document:string) {
-    // split document into lines
-    let allLines: string[] = document.split(/\r?\n/gm)
+function SplitValidMarkdownTables(allLines:string[]) {
+    
     let candidateLines: number[] = [];
 
     // check all the lines and test for table pattern
