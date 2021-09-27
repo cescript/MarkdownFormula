@@ -18,7 +18,7 @@ In this basic example, we have a table which consist of five rows and three colu
 | name           | formula         | values                 |
 | -------------- | --------------- | ---------------------- |
 | three          | -               | 3                      |
-| eight          | -               | 9                      |
+| eight          | -               | 8                      |
 | summation      | #SUM(C1:C2)     | [11](#SUM(C1:C2))      |
 | multiplication | #C1*C2          | [24](#C1*C2)           |
 | average        | #AVERAGE(C1:C2) | [5.5](#AVERAGE(C1:C2)) |
