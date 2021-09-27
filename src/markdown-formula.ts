@@ -21,7 +21,7 @@ type FormulaReturn = {
 
 // return the locations of the found formulas and the replacement values
 // locations: [lineNumber, column]
-// data: [#val]({#formula})
+// data: [#val](##formula)
 export type MarkdownReturn = {
     locations: number[];
     data: string;
@@ -77,7 +77,7 @@ export function MarkdownFormula(document:string):MarkdownReturn[] {
         for(let i = 0; i < allFormulaData[k].address.length; i++)
         {
             const val = hfInstance.getCellValue(allFormulaData[k].address[i]);
-            let result = '[' + val + ']' + '({' + allFormulaData[k].formulas[i] + '})';
+            let result = '[' + val + ']' + '(#' + allFormulaData[k].formulas[i] + ')';
             // push the result into output vector
             output.push({data:result, locations: allFormulaData[k].locations[i]});
         }
@@ -105,14 +105,14 @@ function GetFormulaData(table:TableContent, sheetID:number):FormulaReturn {
             let content = tableData[r][c].content;
 
             // is formula?
-            let formulaPattern = /\[.*?\]\(\{(\=.*?)\}\)/
+            let formulaPattern = /\[.*?\]\(#(.*)\)/
             let match = content.match(formulaPattern);
             if(match != null && match.index)
             {
                 output.address.push({ col: c, row: r, sheet: sheetID });
                 output.locations.push([tableData[r][c].line, tableData[r][c].column + match.index, match[0].length]);
                 output.formulas.push(match[1]);
-                content = match[1];
+                content = '=' + match[1];
             }
 
             // set the content
