@@ -34,6 +34,12 @@ In this example, we will use the cells of the previous table in our current tabl
 | summation and average | #SUM(C1:D2),#AVERAGE(C1:D2)               | [22](#SUM(C1:D2))         | [5.5](#AVERAGE(C1:D2))    |
 | count larger than 3   | #COUNTIF(C1:C3,">3"),#COUNTIF(D1:D3,">3") | [3](#COUNTIF(C1:C3,">3")) | [2](#COUNTIF(D1:D3,">3")) |
 
+## Extension Settings
+*markdown formula* has some customization options under the VS Code's settings panel.
+
+- **precisionRounding**: Rounding precision for floating point numbers can be set.
+- **includeTableHeaderInCellNumaration**: If set to true, the table header is included as the first row in cell enumaration.
+
 ## How to Use
 You have three alternatives to install this extension.
 

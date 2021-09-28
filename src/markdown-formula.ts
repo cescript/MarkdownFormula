@@ -28,20 +28,26 @@ export type MarkdownReturn = {
 }
 
 // given the document, parse valid tables
-export function MarkdownFormula(document:string):MarkdownReturn[] {
+export function MarkdownFormula(document:string, precisionRounding:number, includeTableHeaderInCellNumaration:boolean):MarkdownReturn[] {
 
     // split document into lines
     let allLines: string[] = document.split(/\r?\n/gm)
 
     // find the tables
-    let tableCanditates = SplitValidMarkdownTables(allLines);
+    let tableCanditates = SplitValidMarkdownTables(allLines, includeTableHeaderInCellNumaration);
 
     // print the tables
     console.log("markdown-formula detected %d valid tables!", tableCanditates.length);
 
+    // check the precision level
+    if(precisionRounding < 0) {
+        console.log("invalid precision level!");
+        precisionRounding = 4;
+    }
+
     // create hyperformula option
     const options = {
-        precisionRounding: 4,
+        precisionRounding: precisionRounding,
         licenseKey: 'gpl-v3',
     };
 
@@ -174,10 +180,15 @@ function GetTableColumns(allContent:string[], lineNumber:number) {
 }
 
 // get the table content
-function GetTableContent(allLines:string[], dataLines:number[], sheetID:number)
+function GetTableContent(allLines:string[], dataLines:number[], sheetID:number, includeTableHeaderInCellNumaration:boolean)
 {
     // create a table
     let table: TableContent = {sheet:'Sheet' + sheetID, data:[]};
+
+    // push the table header to the data array
+    if(includeTableHeaderInCellNumaration) {
+        table.data.push(GetTableColumns(allLines, dataLines[0]));
+    }
 
     // fill the table cells, skip the first two rows
     for(let i = 2; i < dataLines.length; i++)
@@ -203,7 +214,7 @@ function GetTableContent(allLines:string[], dataLines:number[], sheetID:number)
 
 // splits the given document into smaller text groups that can be markdown tables
 // returns an array of candidate table content and line numbers
-function SplitValidMarkdownTables(allLines:string[]) {
+function SplitValidMarkdownTables(allLines:string[], includeTableHeaderInCellNumaration:boolean) {
     
     let candidateLines: number[] = [];
 
@@ -230,7 +241,7 @@ function SplitValidMarkdownTables(allLines:string[]) {
             // create table if table contains more than two rows (header and ----)
             if(blocks[i].length > 2)
             {
-                tables.push(GetTableContent(allLines, blocks[i], tables.length));
+                tables.push(GetTableContent(allLines, blocks[i], tables.length, includeTableHeaderInCellNumaration));
             }
         }
     }

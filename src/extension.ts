@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import { MarkdownFormula } from './markdown-formula'
+import { MarkdownFormula } from './markdown-formula';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -17,9 +17,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		// if editor found
 		if (editor) {
-			const document = editor.document;
+			const documentText = editor.document.getText();
+
+			// get the configuration
+			let precisionRounding = vscode.workspace.getConfiguration('markdown-formula')['precisionRounding'];
+			let includeTableHeaderInCellNumaration = vscode.workspace.getConfiguration('markdown-formula')['includeTableHeaderInCellNumaration'];
+
 			// get the markdown formulas and evaluated results
-			let content = MarkdownFormula(document.getText());
+			let content = MarkdownFormula(documentText, precisionRounding, includeTableHeaderInCellNumaration);
 			console.log(content);
 			
 			// replace all the detected formulas with the calculated values
