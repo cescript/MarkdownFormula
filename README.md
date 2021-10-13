@@ -39,6 +39,7 @@ In this example, we will use the cells of the previous table in our current tabl
 
 - **precisionRounding**: Rounding precision for floating point numbers can be set.
 - **includeTableHeaderInCellNumaration**: If set to true, the table header is included as the first row in cell enumaration.
+- **calculateOnSave**: If set to true, the formulas on the tables will be recalculated and the tables will be updated before writing the file to the disk.
 
 ## How to Use
 You have three alternatives to install this extension.
@@ -48,7 +49,6 @@ You have three alternatives to install this extension.
 3. Build it from the source
 
 After installing the extension;
-1. Open a document which contains markdown tables and formulas
-2. Press Ctrl+Shift+P to run a command
-3. Write "Calculate all formulas" and press Enter
-4. All the formula cells in your document should be updated with the calculated values
+- Open a document which contains markdown tables and formulas
+- Save the document to automatically calculate the formulas or Press Ctrl+Shift+P to run a command, write "Calculate all formulas" and press Enter to manually update the formulas
+- All the formula cells in your document should be updated with the calculated values

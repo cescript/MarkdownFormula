@@ -43,6 +43,14 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(disposable);
+
+	// run on save
+	let calculateOnSave = vscode.workspace.getConfiguration('markdown-formula')['calculateOnSave'];
+	if(calculateOnSave) {
+		context.subscriptions.push(vscode.workspace.onWillSaveTextDocument((td) => {
+			vscode.commands.executeCommand('extension.calculate')
+		}));
+	}
 }
 
 // this method is called when your extension is deactivated
